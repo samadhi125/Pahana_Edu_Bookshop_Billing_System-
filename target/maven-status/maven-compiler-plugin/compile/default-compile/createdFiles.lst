@@ -1,8 +1,13 @@
 com\mycompany\pahanaedubookshop\resources\JakartaEE10Resource.class
 controllers\AuthController.class
-controllers\LogoutController.class
-dao\UserDAO.class
+dao\CustomerDAO.class
 models\User.class
+utils\EmailService$1.class
+controllers\CustomerController.class
+utils\EmailService.class
+controllers\LogoutController.class
+models\Customer.class
+dao\UserDAO.class
 com\mycompany\pahanaedubookshop\JakartaRestConfiguration.class
 utils\DBConnection.class
 services\AuthService.class
