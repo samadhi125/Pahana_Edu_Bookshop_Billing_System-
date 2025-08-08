@@ -16,10 +16,10 @@
         <param-value>controllers</param-value>
        </init-param>
         <load-on-startup>1</load-on-startup>
-    </servlet>
+    </servlet>  
     <servlet-mapping>
        <servlet-name>javax.ws.rs.core.Application</servlet-name>
        <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
-
+    </servlet-mapping> 
 </web-app>
+

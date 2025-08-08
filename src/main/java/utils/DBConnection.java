@@ -9,6 +9,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
+    
+    static {
+        try {
+            // Force-load and register the MySQL driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("MySQL driver not found on classpath", e);
+        }
+    }
+    
     private static final String URL = "jdbc:mysql://localhost:3306/pahanaedubookshop";
     private static final String USER = "bookshop_user";
     private static final String PASSWORD = "bookshop_pass";

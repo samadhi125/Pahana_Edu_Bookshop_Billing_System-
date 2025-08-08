@@ -1,7 +1,9 @@
+dao\ItemDAO.class
 com\mycompany\pahanaedubookshop\resources\JakartaEE10Resource.class
 controllers\AuthController.class
 dao\CustomerDAO.class
 models\User.class
+models\Item.class
 utils\EmailService$1.class
 controllers\CustomerController.class
 utils\EmailService.class
@@ -11,3 +13,4 @@ dao\UserDAO.class
 com\mycompany\pahanaedubookshop\JakartaRestConfiguration.class
 utils\DBConnection.class
 services\AuthService.class
+controllers\itemsController.class
