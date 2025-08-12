@@ -17,50 +17,69 @@ import java.io.IOException;
 
 @WebServlet("/items")
 public class itemsController extends HttpServlet {
-    private ItemDAO dao = new ItemDAO();
-    
+    private final ItemDAO dao = new ItemDAO();
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        String action = request.getParameter("action");
-        String name = request.getParameter("name");
-        String description = request.getParameter("description");
-        String priceStr = request.getParameter("price");
-        String stockStr = request.getParameter("stock_quantity");
+        String action   = trim(request.getParameter("action"));
+        String itemId   = trim(request.getParameter("item_id"));
+        String name     = trim(request.getParameter("name"));
+        String desc     = trim(request.getParameter("description"));
+        String priceStr = trim(request.getParameter("price"));
+        String stockStr = trim(request.getParameter("stock_quantity"));
 
         boolean success = false;
-        
-       
         try {
-            // Basic validation for numeric fields
-            if (priceStr == null || stockStr == null) throw new IllegalArgumentException("Price/Stock missing");
-            // Parse to match DB numeric types
-            java.math.BigDecimal price = new java.math.BigDecimal(priceStr);
-            int stock = Integer.parseInt(stockStr);
+            if (action == null) throw new IllegalArgumentException("Missing action");
 
-            Item c = new Item();
-            c.setItemName(name);
-            c.setDescription(description);
-            c.setPrice(priceStr);           // keep your model as String if you want
-            c.setStockQuantity(stockStr);
+            switch (action.toLowerCase()) {
+                case "add": {
+                    if (name == null || desc == null || priceStr == null || stockStr == null)
+                        throw new IllegalArgumentException("Required fields missing");
+                    // parse only here
+                    new java.math.BigDecimal(priceStr);
+                    Integer.parseInt(stockStr);
 
-            if ("add".equalsIgnoreCase(action)) {
-                success = dao.insertItem(c); // will use price/stock as strings but bound properly
-            } else if ("edit".equalsIgnoreCase(action)) {
-                int itemId = Integer.parseInt(request.getParameter("item_id"));
-                c.setItemId(itemId);
-                success = dao.updateItem(c);
-            } else if ("delete".equalsIgnoreCase(action)) {
-                int itemId = Integer.parseInt(request.getParameter("item_id"));
-                success = dao.deleteItem(String.valueOf(itemId));
+                    models.Item it = new models.Item();
+                    it.setItemName(name);
+                    it.setDescription(desc);
+                    it.setPrice(priceStr);
+                    it.setStockQuantity(stockStr);
+                    success = dao.insertItem(it);
+                    break;
+                }
+                case "edit": {
+                    if (itemId == null || name == null || desc == null || priceStr == null || stockStr == null)
+                        throw new IllegalArgumentException("Required fields missing");
+                    new java.math.BigDecimal(priceStr);
+                    Integer.parseInt(stockStr);
+
+                    models.Item it = new models.Item();
+                    it.setItemId(Integer.parseInt(itemId));
+                    it.setItemName(name);
+                    it.setDescription(desc);
+                    it.setPrice(priceStr);
+                    it.setStockQuantity(stockStr);
+                    success = dao.updateItem(it);
+                    break;
+                }
+                case "delete": {
+                    if (itemId == null) throw new IllegalArgumentException("Missing item_id");
+                    success = dao.deleteItem(itemId); // your DAO handles child deletes or FK cascade
+                    break;
+                }
+                default: throw new IllegalArgumentException("Unknown action: " + action);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // make sure you check server.log
-            request.getSession().setAttribute("lastError", e.getMessage());
+            e.printStackTrace();
+            request.getSession().setAttribute("lastError", e.getClass().getSimpleName()+": "+e.getMessage());
         }
-
-        response.sendRedirect(request.getContextPath() + "/jsp/itemForm.jsp?msg=" + (success ? "success" : "error"));
+        response.sendRedirect(request.getContextPath()+"/jsp/itemForm.jsp?msg="+(success?"success":"error"));
     }
+
+    private static String trim(String s){ return s==null?null:s.trim(); }
 }
+

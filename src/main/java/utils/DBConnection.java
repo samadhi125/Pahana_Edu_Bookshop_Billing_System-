@@ -18,7 +18,7 @@ public class DBConnection {
             throw new RuntimeException("MySQL driver not found on classpath", e);
         }
     }
-    
+ 
     private static final String URL = "jdbc:mysql://localhost:3306/pahanaedubookshop";
     private static final String USER = "bookshop_user";
     private static final String PASSWORD = "bookshop_pass";

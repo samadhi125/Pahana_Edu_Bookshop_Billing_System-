@@ -40,6 +40,7 @@ public class ItemDAO {
             return stmt.executeUpdate() > 0;
         }
     }
+    
     public Item getItemById(String ItemId) throws SQLException {
     String sql = "SELECT * FROM items WHERE item_id = ?";
     try (Connection conn = DBConnection.getConnection();

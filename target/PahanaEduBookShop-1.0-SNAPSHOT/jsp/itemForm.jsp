@@ -73,7 +73,7 @@
                 <input type="submit" value="Edit"/>
             </form>
 
-            <form action="../items" method="post" style="display:inline;" onsubmit="return confirm('Are you sure to delete?');">
+            <form action="<%= request.getContextPath() %>/items" method="post" style="display:inline;" onsubmit="return confirm('Are you sure to delete?');">
                 <input type="hidden" name="action" value="delete"/>
                 <input type="hidden" name="item_id" value="<%= c.getItemId() %>"/>
                 <input type="submit" value="Delete"/>

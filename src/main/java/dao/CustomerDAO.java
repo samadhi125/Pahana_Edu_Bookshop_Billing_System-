@@ -83,6 +83,25 @@ public class CustomerDAO {
     }
     return null;
 }
+    public Customer getCustomerById(int id) throws SQLException {
+    String sql = "SELECT * FROM Customers WHERE customer_id=?";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, id);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                Customer c = new Customer();
+                c.setCustomerId(rs.getInt("customer_id"));
+                c.setAccountNumber(rs.getString("account_number"));
+                c.setFirstName(rs.getString("first_name"));
+                c.setLastName(rs.getString("last_name"));
+                return c;
+            }
+        }
+    }
+    return null;
+}
+
 
     
     public boolean deleteCustomer(String accountNumber) throws SQLException {
