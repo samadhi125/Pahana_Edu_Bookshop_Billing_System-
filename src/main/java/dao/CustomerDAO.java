@@ -135,4 +135,38 @@ public class CustomerDAO {
         }
         return list;
     }
+    public List<models.Customer> searchCustomers(String q) throws java.sql.SQLException {
+    final String sql =
+        "SELECT account_number, first_name, last_name, phone, address, email " +
+        "FROM customers " +
+        "WHERE LOWER(account_number) LIKE ? " +
+        "   OR LOWER(first_name) LIKE ? " +
+        "   OR LOWER(last_name)  LIKE ? " +
+        "   OR LOWER(phone)      LIKE ? " +
+        "   OR LOWER(email)      LIKE ? " +
+        "ORDER BY first_name, last_name";
+
+    List<models.Customer> list = new java.util.ArrayList<>();
+    try (java.sql.Connection c = DBConnection.getConnection();
+         java.sql.PreparedStatement ps = c.prepareStatement(sql)) {
+
+        String like = "%" + q.toLowerCase() + "%";
+        for (int i = 1; i <= 5; i++) ps.setString(i, like);
+
+        try (java.sql.ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                models.Customer cust = new models.Customer();
+                cust.setAccountNumber(rs.getString("account_number"));
+                cust.setFirstName(rs.getString("first_name"));
+                cust.setLastName(rs.getString("last_name"));
+                cust.setPhone(rs.getString("phone"));
+                cust.setAddress(rs.getString("address"));
+                cust.setEmail(rs.getString("email"));
+                list.add(cust);
+            }
+        }
+    }
+    return list;
+}
+
 }

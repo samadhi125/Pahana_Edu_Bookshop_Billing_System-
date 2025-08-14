@@ -18,6 +18,7 @@ import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import jakarta.servlet.ServletOutputStream;
 
 import models.Bills;
 import models.BillItem;
@@ -29,6 +30,8 @@ import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 public class PdfUtils {
 
@@ -131,5 +134,13 @@ public class PdfUtils {
     private static String formatTimestamp(Timestamp ts) {
         if (ts == null) return "";
         return ts.toInstant().atZone(ZoneId.systemDefault()).format(DATE_FMT);
+    }
+
+    public static void writeSimpleTable(ServletOutputStream outputStream, String name, List<String> headers, List<Map<String, Object>> rows) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public static void writeSimpleKeyValueReport(ServletOutputStream outputStream, String daily_Sales, Map<String, Object> m) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

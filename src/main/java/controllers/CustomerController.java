@@ -27,7 +27,7 @@ public class CustomerController extends HttpServlet {
         c.setPhone(request.getParameter("phone"));
         c.setAddress(request.getParameter("address"));
         c.setEmail(request.getParameter("email"));
-        
+        HttpSession session = request.getSession();
         try {
             boolean success = false;
             if ("add".equals(action)) {
@@ -44,14 +44,18 @@ public class CustomerController extends HttpServlet {
                     }
                 }
             } else if ("edit".equals(action)) {
-                c.setAccountNumber(request.getParameter("account_number")); // Important: get account number for update
+                c.setAccountNumber(request.getParameter("account_number"));  
+                 session.setAttribute("flashSuccess", "Customer edit successfully");
                 success = dao.updateCustomer(c);
             } else if ("delete".equals(action)) {
                 String accountNumber = request.getParameter("account_number");
+                 session.setAttribute("flashSuccess", "Customer delete successfully");
                 success = dao.deleteCustomer(accountNumber);
             }
             
             if (success) {
+                
+                session.setAttribute("flashSuccess", "Customer saved successfully");
                 response.sendRedirect("jsp/customerForm.jsp?msg=success");
             } else {
                 response.sendRedirect("jsp/customerForm.jsp?msg=error");

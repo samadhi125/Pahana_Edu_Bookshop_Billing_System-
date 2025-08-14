@@ -106,7 +106,7 @@ public class BillingController extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendRedirect("jsp/billing.jsp?msg=error");
+            resp.sendRedirect("jsp/adminDashboard.jsp?msg=error");
         }
     }
 }

@@ -21,53 +21,91 @@ import java.util.List;
 
 public class BillingDAO {
 
-    public int createBill(Bills bill) throws SQLException {
-        final String insertBill =
-                "INSERT INTO Bills (customer_id, subtotal, tax_rate, tax_amount, total) VALUES (?,?,?,?,?)";
-        final String insertItem =
-                "INSERT INTO BillItems (bill_id, item_id, item_name, unit_price, quantity, line_total) VALUES (?,?,?,?,?,?)";
+    // dao/BillingDAO.java
+public int createBill(Bills bill) throws SQLException {
+    final String insertBill =
+        "INSERT INTO Bills (customer_id, subtotal, tax_rate, tax_amount, total) VALUES (?,?,?,?,?)";
+    final String insertItem =
+        "INSERT INTO BillItems (bill_id, item_id, item_name, unit_price, quantity, line_total) VALUES (?,?,?,?,?,?)";
 
-        try (Connection conn = DBConnection.getConnection()) {
-            conn.setAutoCommit(false);
+    // Lock & check stock; then deduct; then write bill
+    final String lockSql = "SELECT stock_quantity FROM items WHERE item_id=? FOR UPDATE";
+    final String updSql  = "UPDATE items SET stock_quantity = stock_quantity - ? WHERE item_id=?";
+
+    try (Connection conn = DBConnection.getConnection()) {
+        conn.setAutoCommit(false);
+        try {
+            // 1) Lock each item row and validate stock
+            try (PreparedStatement lock = conn.prepareStatement(lockSql)) {
+                for (BillItem li : bill.getItems()) {
+                    lock.setInt(1, li.getItemId());
+                    try (ResultSet rs = lock.executeQuery()) {
+                        if (!rs.next()) {
+                            throw new SQLException("Item not found: ID " + li.getItemId());
+                        }
+                        int current = rs.getInt(1);
+                        if (current < li.getQuantity()) {
+                            throw new SQLException(
+                                "Insufficient stock for item! " + li.getItemName() +
+                                " (ID " + li.getItemId() + "): need " + li.getQuantity() +
+                                ", available " + current
+                            );
+                        }
+                    }
+                }
+            }
+
+            // 2) Deduct stock for each item
+            try (PreparedStatement upd = conn.prepareStatement(updSql)) {
+                for (BillItem li : bill.getItems()) {
+                    upd.setInt(1, li.getQuantity());
+                    upd.setInt(2, li.getItemId());
+                    upd.addBatch();
+                }
+                upd.executeBatch();
+            }
+
+            // 3) Insert bill
+            int billId;
             try (PreparedStatement ps = conn.prepareStatement(insertBill, Statement.RETURN_GENERATED_KEYS)) {
-
                 ps.setInt(1, bill.getCustomerId());
-                ps.setBigDecimal(2, nz(bill.getSubtotal()));   // DECIMAL -> BigDecimal
-                ps.setBigDecimal(3, nz(bill.getTaxRate()));    // percent stored as DECIMAL
+                ps.setBigDecimal(2, nz(bill.getSubtotal()));
+                ps.setBigDecimal(3, nz(bill.getTaxRate()));
                 ps.setBigDecimal(4, nz(bill.getTaxAmount()));
                 ps.setBigDecimal(5, nz(bill.getTotal()));
                 ps.executeUpdate();
 
-                int billId;
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (!rs.next()) throw new SQLException("Creating bill failed: no ID returned.");
                     billId = rs.getInt(1);
                 }
-
-                try (PreparedStatement pi = conn.prepareStatement(insertItem)) {
-                    for (BillItem li : bill.getItems()) {
-                        pi.setInt(1, billId);
-                        pi.setInt(2, li.getItemId());
-                        pi.setString(3, li.getItemName());
-                        pi.setBigDecimal(4, nz(li.getUnitPrice()));
-                        pi.setInt(5, li.getQuantity());
-                        pi.setBigDecimal(6, nz(li.getLineTotal()));
-                        pi.addBatch();
-                    }
-                    pi.executeBatch();
-                }
-
-                conn.commit();
-                return billId;
-
-            } catch (SQLException ex) {
-                conn.rollback();
-                throw ex;
-            } finally {
-                conn.setAutoCommit(true);
             }
+
+            // 4) Insert bill items
+            try (PreparedStatement pi = conn.prepareStatement(insertItem)) {
+                for (BillItem li : bill.getItems()) {
+                    pi.setInt(1, billId);
+                    pi.setInt(2, li.getItemId());
+                    pi.setString(3, li.getItemName());
+                    pi.setBigDecimal(4, nz(li.getUnitPrice()));
+                    pi.setInt(5, li.getQuantity());
+                    pi.setBigDecimal(6, nz(li.getLineTotal()));
+                    pi.addBatch();
+                }
+                pi.executeBatch();
+            }
+
+            conn.commit();
+            return billId;
+        } catch (SQLException ex) {
+            conn.rollback();
+            throw ex;
+        } finally {
+            conn.setAutoCommit(true);
         }
     }
+}
+
 
     public List<Bills> getBillsByCustomer(int customerId) throws SQLException {
         final String q = "SELECT bill_id, subtotal, tax_rate, tax_amount, total, created_at " +

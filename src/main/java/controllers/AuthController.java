@@ -41,8 +41,10 @@ public class AuthController extends HttpServlet {
 
                 // Redirect by role
                 if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                    session.setAttribute("flashSuccess", "Wellcome to Admin Dashboard");
                     response.sendRedirect("jsp/adminDashboard.jsp");
                 } else if ("CASHIER".equalsIgnoreCase(user.getRole())) {
+                    session.setAttribute("flashSuccess", "Wellcome to Cashier Dashboard");
                     response.sendRedirect("jsp/cashierDashboard.jsp");
                 }
             } else {

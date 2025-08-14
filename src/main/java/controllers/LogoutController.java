@@ -16,11 +16,19 @@ import java.io.IOException;
  */
 @WebServlet("/logout")
 public class LogoutController extends HttpServlet {
+  @Override
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getSession().invalidate();  // clear session
-        response.sendRedirect("jsp/login.jsp");
-    }
+    // end old session if any
+    var old = request.getSession(false);
+    if (old != null) old.invalidate();
+
+    // create a fresh session just to carry the flash message
+    var flash = request.getSession(true);
+    flash.setAttribute("flashSuccess", "You have logged out successfully");
+
+    response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
+  }
 }
+

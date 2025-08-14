@@ -90,4 +90,39 @@ public class ItemDAO {
         }
         return list;
     }
+    public List<models.Item> searchItems(String q) throws java.sql.SQLException {
+    final String sql =
+        "SELECT item_id, name, description, price, stock_quantity " +
+        "FROM items " +
+        "WHERE LOWER(name)        LIKE ? " +
+        "   OR LOWER(description) LIKE ? " +
+        "   OR CAST(price AS CHAR) LIKE ? " +
+        "   OR CAST(stock_quantity AS CHAR) LIKE ? " +
+        "ORDER BY name";
+
+    List<models.Item> list = new java.util.ArrayList<>();
+    try (java.sql.Connection c = DBConnection.getConnection();
+         java.sql.PreparedStatement ps = c.prepareStatement(sql)) {
+
+        String like = "%" + q.toLowerCase() + "%";
+        ps.setString(1, like);
+        ps.setString(2, like);
+        ps.setString(3, like);
+        ps.setString(4, like);
+
+        try (java.sql.ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                models.Item it = new models.Item();
+                it.setItemId(rs.getInt("item_id"));
+                it.setItemName(rs.getString("name"));
+                it.setDescription(rs.getString("description"));
+                it.setPrice(rs.getString("price"));           // adjust type if BigDecimal
+                it.setStockQuantity(rs.getString("stock_quantity")); // adjust type if int
+                list.add(it);
+            }
+        }
+    }
+    return list;
+}
+
 }

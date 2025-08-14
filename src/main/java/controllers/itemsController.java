@@ -30,7 +30,7 @@ public class itemsController extends HttpServlet {
         String desc     = trim(request.getParameter("description"));
         String priceStr = trim(request.getParameter("price"));
         String stockStr = trim(request.getParameter("stock_quantity"));
-
+        HttpSession session = request.getSession();
         boolean success = false;
         try {
             if (action == null) throw new IllegalArgumentException("Missing action");
@@ -48,6 +48,7 @@ public class itemsController extends HttpServlet {
                     it.setDescription(desc);
                     it.setPrice(priceStr);
                     it.setStockQuantity(stockStr);
+                     session.setAttribute("flashSuccess", "Customer add successfully");
                     success = dao.insertItem(it);
                     break;
                 }
@@ -63,11 +64,13 @@ public class itemsController extends HttpServlet {
                     it.setDescription(desc);
                     it.setPrice(priceStr);
                     it.setStockQuantity(stockStr);
+                     session.setAttribute("flashSuccess", "Customer edit successfully");
                     success = dao.updateItem(it);
                     break;
                 }
                 case "delete": {
                     if (itemId == null) throw new IllegalArgumentException("Missing item_id");
+                     session.setAttribute("flashSuccess", "Customer delete successfully");
                     success = dao.deleteItem(itemId); // your DAO handles child deletes or FK cascade
                     break;
                 }
