@@ -315,6 +315,10 @@
                 <i class="fas fa-chart-line"></i>
                 Billing History
             </a>
+            <a href="<%=request.getContextPath()%>/jsp/help.jsp" class="nav-item" onclick="setActive(this)">
+            <i class="fas fa-question-circle"></i>
+                Help & Support
+            </a>
               
         </div>
     </nav>
