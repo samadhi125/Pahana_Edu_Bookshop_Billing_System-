@@ -30,10 +30,21 @@ import java.util.List;
 
 @WebServlet("/billing")
 public class BillingController extends HttpServlet {
-    private final BillingDAO billingDAO = new BillingDAO();
-    private final BillingService calc = new BillingService();
-    private final CustomerDAO customerDAO = new CustomerDAO();
-    private final ItemDAO itemDAO = new ItemDAO();
+    BillingDAO billingDAO;
+    BillingService calc;
+    CustomerDAO customerDAO;
+    ItemDAO itemDAO;
+
+    public BillingController() { // used in real app
+        this(new BillingDAO(), new BillingService(), new CustomerDAO(), new ItemDAO());
+    }
+    // public or package-visible for tests
+    public BillingController(BillingDAO billingDAO, BillingService calc, CustomerDAO customerDAO, ItemDAO itemDAO) {
+        this.billingDAO = billingDAO;
+        this.calc = calc;
+        this.customerDAO = customerDAO;
+        this.itemDAO = itemDAO;
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

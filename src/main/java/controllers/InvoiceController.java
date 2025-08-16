@@ -22,8 +22,19 @@ import java.util.List;
 
 @WebServlet("/invoice")
 public class InvoiceController extends HttpServlet {
-    private final BillingDAO billingDAO = new BillingDAO();
-    private final CustomerDAO customerDAO = new CustomerDAO();
+    BillingDAO billingDAO;
+    CustomerDAO customerDAO;
+
+    // used by the servlet container at runtime
+    public InvoiceController() {
+        this(new BillingDAO(), new CustomerDAO());
+    }
+
+    // used by unit tests
+    public InvoiceController(BillingDAO billingDAO, CustomerDAO customerDAO) {
+        this.billingDAO = billingDAO;
+        this.customerDAO = customerDAO;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

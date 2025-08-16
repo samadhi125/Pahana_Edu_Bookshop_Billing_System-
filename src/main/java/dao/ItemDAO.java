@@ -96,8 +96,8 @@ public class ItemDAO {
         "FROM items " +
         "WHERE LOWER(name)        LIKE ? " +
         "   OR LOWER(description) LIKE ? " +
-        "   OR CAST(price AS CHAR) LIKE ? " +
-        "   OR CAST(stock_quantity AS CHAR) LIKE ? " +
+        "   OR LOWER(CAST(price AS VARCHAR)) LIKE ? " +          // <-- CHAR -> VARCHAR + LOWER
+        "   OR LOWER(CAST(stock_quantity AS VARCHAR)) LIKE ? " + // <-- CHAR -> VARCHAR + LOWER
         "ORDER BY name";
 
     List<models.Item> list = new java.util.ArrayList<>();
@@ -116,13 +116,13 @@ public class ItemDAO {
                 it.setItemId(rs.getInt("item_id"));
                 it.setItemName(rs.getString("name"));
                 it.setDescription(rs.getString("description"));
-                it.setPrice(rs.getString("price"));           // adjust type if BigDecimal
-                it.setStockQuantity(rs.getString("stock_quantity")); // adjust type if int
+                it.setPrice(rs.getString("price"));
+                it.setStockQuantity(rs.getString("stock_quantity"));
                 list.add(it);
             }
         }
     }
     return list;
+    }
 }
 
-}

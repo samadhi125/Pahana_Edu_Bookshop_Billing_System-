@@ -19,7 +19,16 @@ import java.io.IOException;
 
 @WebServlet("/login")
 public class AuthController extends HttpServlet {
-    private AuthService authService = new AuthService();
+    private AuthService authService;
+
+    public AuthController() {                  // used by servlet container
+        this(new AuthService());
+    }
+
+    // make public (simplest for beginners)
+    public AuthController(AuthService authService) { // used by tests
+        this.authService = authService;
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

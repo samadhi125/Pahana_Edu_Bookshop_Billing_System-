@@ -14,7 +14,17 @@ import java.io.IOException;
 
 @WebServlet("/customer")
 public class CustomerController extends HttpServlet {
-    private CustomerDAO dao = new CustomerDAO();
+    
+
+    CustomerDAO dao;
+
+    public CustomerController() {              // used by servlet container at runtime
+        this(new CustomerDAO());
+    }
+
+    public CustomerController(CustomerDAO dao) { // used by tests
+        this.dao = dao;
+    }
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
