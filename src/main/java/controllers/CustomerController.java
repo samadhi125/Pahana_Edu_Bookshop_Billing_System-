@@ -33,6 +33,7 @@ public class CustomerController extends HttpServlet {
             if ("add".equals(action)) {
                 success = dao.insertCustomer(c);
                 if (success) {
+                    session.setAttribute("flashSuccess", "Customer saved successfully");
                     try {
                         EmailService.sendEmail(c.getEmail(), "Welcome to Pahana Edu Bookshop",
                                 "Dear " + c.getFirstName() + ",\n\nWelcome to Pahana Edu Bookshop! You have been registered successfully.\n\nBest regards,\nPahana Edu Bookshop Team");
@@ -54,8 +55,6 @@ public class CustomerController extends HttpServlet {
             }
             
             if (success) {
-                
-                session.setAttribute("flashSuccess", "Customer saved successfully");
                 response.sendRedirect("jsp/customerForm.jsp?msg=success");
             } else {
                 response.sendRedirect("jsp/customerForm.jsp?msg=error");

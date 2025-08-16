@@ -303,10 +303,7 @@
     <!-- Navigation Bar -->
     <nav class="navigation">
         <div class="nav-content" id="navContent">
-            <a href="<%=request.getContextPath()%>/jsp/billing.jsp" class="nav-item active" onclick="setActive(this)">
-                <i class="fas fa-file-invoice"></i>
-                Invoice Management
-            </a>
+
             <a href="<%=request.getContextPath()%>/jsp/customerForm.jsp" class="nav-item" onclick="setActive(this)">
                 <i class="fas fa-users"></i>
                 Customer Management
@@ -334,7 +331,7 @@
     <!-- Content Container -->
     <div class="content-container">
         <div class="content-frame">
-            <iframe id="contentFrame" src="<%=request.getContextPath()%>/jsp/billing.jsp"></iframe>
+            <iframe id="contentFrame" src="<%=request.getContextPath()%>/jsp/customerForm.jsp"></iframe>
         </div>
     </div>
 
